@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import Calendar from 'react-calendar'
 import 'react-calendar/dist/Calendar.css'
@@ -15,7 +15,7 @@ import '../../../styles/calendar.css'
 
 type BookingStep = 'service' | 'datetime' | 'info' | 'payment' | 'upload' | 'confirmation'
 
-export default function BookingPage() {
+function BookingPageContent() {
   const searchParams = useSearchParams()
   const serviceId = searchParams.get('serviceId')
 
@@ -582,5 +582,13 @@ export default function BookingPage() {
         )}
       </div>
     </main>
+  )
+}
+
+export default function BookingPage() {
+  return (
+    <Suspense fallback={<div className="flex items-center justify-center min-h-screen">Loading...</div>}>
+      <BookingPageContent />
+    </Suspense>
   )
 }
