@@ -2,12 +2,11 @@
 
 import { useState, useEffect } from 'react'
 import { bookingQueries } from '@/lib/supabase/bookings'
-import { Booking } from '@/lib/types/database'
 
 export default function AdminBookingsPage() {
-  const [bookings, setBookings] = useState<(Booking & { clients: any })[]>([])
+  const [bookings, setBookings] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
-  const [selectedBooking, setSelectedBooking] = useState<(Booking & { clients: any }) | null>(null)
+  const [selectedBooking, setSelectedBooking] = useState<any | null>(null)
   const [statusFilter, setStatusFilter] = useState<'all' | 'pending' | 'confirmed' | 'completed' | 'cancelled'>('all')
 
   useEffect(() => {

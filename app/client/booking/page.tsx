@@ -506,7 +506,7 @@ export default function BookingPage() {
               onClick={() => setCurrentStep('upload')}
               className="w-full bg-primary text-white py-2 rounded-lg hover:bg-pink-600 transition"
             >
-              I've Sent the Deposit
+              I&apos;ve Sent the Deposit
             </button>
           </div>
         )}

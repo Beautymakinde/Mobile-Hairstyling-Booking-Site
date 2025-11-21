@@ -15,7 +15,7 @@ export default function AdminDashboard() {
       <div className="container mx-auto px-4 py-8">
         <div className="grid md:grid-cols-4 gap-6 mb-8">
           <div className="bg-white p-6 rounded-lg shadow">
-            <p className="text-gray-600 text-sm">Today's Appointments</p>
+            <p className="text-gray-600 text-sm">Today&apos;s Appointments</p>
             <p className="text-3xl font-bold text-gray-900 mt-2">0</p>
           </div>
           <div className="bg-white p-6 rounded-lg shadow">

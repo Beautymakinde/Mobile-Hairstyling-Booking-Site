@@ -14,20 +14,10 @@ interface Conversation {
   unread_count: number
 }
 
-interface Message {
-  id: string
-  sender_id: string
-  sender_type: string
-  receiver_id: string
-  content: string
-  created_at: string
-  is_read: boolean
-}
-
 export default function AdminMessagesPage() {
   const [conversations, setConversations] = useState<Conversation[]>([])
   const [selectedBooking, setSelectedBooking] = useState<string | null>(null)
-  const [messages, setMessages] = useState<Message[]>([])
+  const [messages, setMessages] = useState<any[]>([])
   const [newMessage, setNewMessage] = useState('')
   const [loading, setLoading] = useState(true)
   const [unreadCount, setUnreadCount] = useState(0)
@@ -95,6 +85,8 @@ export default function AdminMessagesPage() {
     try {
       const booking = await bookingQueries.getBookingWithClient(selectedBooking)
       
+      if (!booking) return
+
       await messageQueries.createMessage({
         sender_id: adminId,
         sender_type: 'admin',

@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { settingsQueries } from '@/lib/supabase/settings'
 
 export default function AdminSettingsPage() {
-  const [settings, setSettings] = useState<any>(null)
+  const [, setSettings] = useState<any>(null)
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)

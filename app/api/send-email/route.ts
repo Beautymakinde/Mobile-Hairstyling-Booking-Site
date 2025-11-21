@@ -41,7 +41,6 @@ export async function POST(request: NextRequest) {
       clientName,
       templateType,
       templateData,
-      _isAdmin = false,
     } = body;
 
     // Validate required fields
@@ -62,7 +61,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Get email template
-    const template = emailTemplates[templateType];
+    const template = (emailTemplates as any)[templateType];
     if (!template) {
       return NextResponse.json(
         { error: 'Invalid template type' },
