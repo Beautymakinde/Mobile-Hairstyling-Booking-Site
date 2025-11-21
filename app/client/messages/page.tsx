@@ -69,7 +69,7 @@ export default function ClientMessagesPage() {
   const loadMessages = async (bookingId: string, clientId: string) => {
     try {
       const msgs = await messageQueries.getMessagesByBooking(bookingId)
-      setMessages(msgs)
+      setMessages(msgs as any)
       // Mark as read
       await messageQueries.markAsRead(bookingId, clientId)
       loadUnreadCount(clientId)
@@ -92,7 +92,7 @@ export default function ClientMessagesPage() {
 
     try {
       // Get admin ID (in production, would come from booking data)
-      const booking = await bookingQueries.getBookingWithClient(selectedBooking)
+      const _booking = await bookingQueries.getBookingWithClient(selectedBooking)
       const adminId = 'admin_default'
 
       await messageQueries.createMessage({

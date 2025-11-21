@@ -41,7 +41,7 @@ export async function POST(request: NextRequest) {
       clientName,
       templateType,
       templateData,
-      isAdmin = false,
+      _isAdmin = false,
     } = body;
 
     // Validate required fields

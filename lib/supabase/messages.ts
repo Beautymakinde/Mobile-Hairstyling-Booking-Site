@@ -78,7 +78,7 @@ export const messageQueries = {
   /**
    * Get all conversations (unique booking threads) for a user
    */
-  async getConversations(userId: string, userType: 'client' | 'admin'): Promise<any[]> {
+  async getConversations(userId: string, _userType: 'client' | 'admin'): Promise<any[]> {
     const { data, error } = await supabase
       .from('messages')
       .select(
@@ -138,10 +138,10 @@ export const messageQueries = {
       .eq('receiver_id', userId)
       .eq('receiver_type', userType)
       .eq('is_read', false)
-      .distinct();
+      .select('distinct booking_id')
 
     if (error) throw error;
-    return data?.map((m) => m.booking_id) || [];
+    return data?.map((m: any) => m.booking_id) || [];
   },
 
   /**
@@ -175,7 +175,7 @@ export const messageQueries = {
   async searchMessages(
     userId: string,
     query: string,
-    userType: 'client' | 'admin'
+    _userType: 'client' | 'admin'
   ): Promise<Message[]> {
     const { data, error } = await supabase
       .from('messages')

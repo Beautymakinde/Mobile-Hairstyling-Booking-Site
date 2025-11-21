@@ -131,7 +131,7 @@ export const notificationService = {
   },
 
   // Send email using EmailJS
-  sendEmail: async (to: string, subject: string, html: string, adminEmail?: string) => {
+  sendEmail: async (to: string, subject: string, _html?: string, _adminEmail?: string) => {
     // This requires EmailJS setup
     // For now, returns a promise that could be implemented
     return new Promise((resolve) => {

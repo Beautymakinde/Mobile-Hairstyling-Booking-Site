@@ -11,7 +11,6 @@ import { storageQueries } from '@/lib/supabase/storage'
 import { settingsQueries } from '@/lib/supabase/settings'
 import { Service } from '@/lib/types/database'
 import { getTimeSlots, addMinutesToTime } from '@/lib/utils/time'
-import { emailTemplates } from '@/lib/notifications/email'
 import '../../../styles/calendar.css'
 
 type BookingStep = 'service' | 'datetime' | 'info' | 'payment' | 'upload' | 'confirmation'
@@ -39,7 +38,6 @@ export default function BookingPage() {
 
   const [receiptFile, setReceiptFile] = useState<File | null>(null)
   const [receiptPreview, setReceiptPreview] = useState<string | null>(null)
-  const [bookingId, setBookingId] = useState<string | null>(null)
   const [zelleInfo, setZelleInfo] = useState<{ email?: string; phone?: string } | null>(null)
   const [zelleLoading, setZelleLoading] = useState(true)
 
@@ -169,7 +167,7 @@ export default function BookingPage() {
         deposit_receipt_url: null,
       })
 
-      setBookingId(booking.id)
+      // Booking created successfully
 
       // Upload receipt if provided
       if (receiptFile) {
@@ -328,7 +326,11 @@ export default function BookingPage() {
               <div>
                 <h3 className="font-bold mb-4">Select a Date</h3>
                 <Calendar
-                  onChange={handleDateSelect}
+                  onChange={(value) => {
+                    if (value instanceof Date) {
+                      handleDateSelect(value)
+                    }
+                  }}
                   value={selectedDate}
                   minDate={new Date()}
                 />
