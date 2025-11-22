@@ -72,3 +72,7 @@ export const serviceQueries = {
     if (error) throw error
   },
 }
+
+// Convenience exports for client-facing pages
+export const getServices = serviceQueries.getActiveServices
+export const getServiceById = serviceQueries.getService
