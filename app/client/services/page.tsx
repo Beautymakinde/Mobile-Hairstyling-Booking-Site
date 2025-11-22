@@ -26,38 +26,110 @@ export default function ServicesPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <p className="text-gray-600">Loading services...</p>
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-muted">Loading services...</p>
+        </div>
       </div>
     )
   }
 
   if (error) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <p className="text-red-600">Error: {error}</p>
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="text-center">
+          <p className="text-red-600 mb-4">Error: {error}</p>
+          <a href="/" className="btn-primary">Go Home</a>
+        </div>
       </div>
     )
   }
 
   return (
-    <main className="min-h-screen bg-gray-50 py-12">
-      <div className="container mx-auto px-4">
-        <h1 className="text-4xl font-bold text-gray-900 mb-12">Our Services</h1>
+    <main className="min-h-screen bg-background">
+      {/* Header */}
+      <div className="bg-gradient-to-r from-primary to-purple-700 py-16">
+        <div className="container mx-auto px-4 max-w-container">
+          <div className="max-w-3xl">
+            <a href="/" className="text-white/80 hover:text-white mb-4 inline-flex items-center gap-2">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              </svg>
+              Back to Home
+            </a>
+            <h1 className="text-4xl md:text-5xl font-heading font-bold text-white mt-4">
+              Our Services
+            </h1>
+            <p className="text-white/90 text-lg mt-4">
+              Choose from our range of professional hairstyling services
+            </p>
+          </div>
+        </div>
+      </div>
 
+      {/* Services Grid */}
+      <div className="container mx-auto px-4 py-16 max-w-container">
         {services.length === 0 ? (
-          <p className="text-center text-gray-600">No services available yet</p>
+          <div className="text-center py-20">
+            <p className="text-muted text-lg">No services available yet</p>
+            <p className="text-muted mt-2">Please check back soon</p>
+          </div>
         ) : (
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
             {services.map((service) => (
-              <div key={service.id} className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition">
-                {service.image_url && (
-                  <img
-                    src={service.image_url}
-                    alt={service.name}
-                    className="w-full h-48 object-cover"
-                  />
-                )}
+              <div key={service.id} className="card group hover:scale-[1.02] transform transition-all duration-300">
+                {/* Service Image */}
+                <div className="relative h-56 bg-gradient-to-br from-primary/20 to-secondary/20 overflow-hidden">
+                  {service.image_url ? (
+                    <img
+                      src={service.image_url}
+                      alt={service.name}
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center">
+                      <svg className="w-20 h-20 text-primary/30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                      </svg>
+                    </div>
+                  )}
+                  <div className="absolute top-4 right-4 bg-white px-3 py-1 rounded-full">
+                    <p className="text-primary font-bold text-lg">${service.price}</p>
+                  </div>
+                </div>
+
+                {/* Service Info */}
+                <div className="p-6">
+                  <h3 className="text-2xl font-heading font-semibold text-heading mb-2">
+                    {service.name}
+                  </h3>
+                  <p className="text-muted mb-4 line-clamp-2">
+                    {service.description || 'Professional hairstyling service'}
+                  </p>
+                  
+                  <div className="flex items-center gap-2 text-muted mb-6">
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <span>{service.duration_minutes} minutes</span>
+                  </div>
+
+                  <a 
+                    href={`/client/booking?serviceId=${service.id}`}
+                    className="block w-full text-center btn-primary"
+                  >
+                    Book Now
+                  </a>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </main>
+  )
+}
                 <div className="p-6">
                   <h2 className="text-2xl font-bold text-gray-900 mb-2">
                     {service.name}
