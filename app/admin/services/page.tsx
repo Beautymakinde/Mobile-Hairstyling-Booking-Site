@@ -1,258 +1,245 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { serviceQueries } from '@/lib/supabase/services'
-import { Service } from '@/lib/types/database'
 
-export default function AdminServicesPage() {
+type Service = {
+  id: number
+  name: string
+  category: string
+  price: number
+  duration: number
+  active: boolean
+}
+
+export default function ServicesPage() {
   const [services, setServices] = useState<Service[]>([])
-  const [loading, setLoading] = useState(true)
-  const [showForm, setShowForm] = useState(false)
-  const [editingId, setEditingId] = useState<string | null>(null)
-  const [formData, setFormData] = useState({
-    name: '',
-    description: '',
-    duration: 30,
-    price: 0,
-    image_url: '',
-    active: true,
-  })
+  const [selectedCategory, setSelectedCategory] = useState('all')
+  const [showAddModal, setShowAddModal] = useState(false)
+
+  const categories = ['all', 'Extensions', 'Braids', 'Weave', 'Others']
 
   useEffect(() => {
-    loadServices()
+    // Mock data - Replace with real Supabase fetch
+    const mockServices: Service[] = [
+      // Extensions
+      { id: 1, name: 'Quickweave', category: 'Extensions', price: 140, duration: 180, active: true },
+      { id: 2, name: 'Ponytail Extension', category: 'Extensions', price: 100, duration: 120, active: true },
+      { id: 3, name: 'Traditional Sew-in', category: 'Extensions', price: 180, duration: 180, active: true },
+      // Braids
+      { id: 4, name: 'Medium Knotless Braids', category: 'Braids', price: 200, duration: 360, active: true },
+      { id: 5, name: 'French Curls', category: 'Braids', price: 200, duration: 300, active: true },
+      { id: 6, name: 'Boho Braids', category: 'Braids', price: 250, duration: 540, active: true },
+      // Weave
+      { id: 7, name: 'Big Stitch Braids', category: 'Weave', price: 150, duration: 240, active: true },
+      { id: 8, name: 'Small Stitch Braids', category: 'Weave', price: 250, duration: 360, active: true },
+      { id: 9, name: 'Lemonade Braids', category: 'Weave', price: 200, duration: 360, active: true },
+      { id: 10, name: 'Weaved Ponytail', category: 'Weave', price: 200, duration: 300, active: true },
+      { id: 11, name: 'Fulani Braids', category: 'Weave', price: 200, duration: 300, active: true },
+      // Others
+      { id: 12, name: 'Softlocs', category: 'Others', price: 150, duration: 300, active: true },
+      { id: 13, name: 'Crochet', category: 'Others', price: 130, duration: 240, active: true },
+      { id: 14, name: 'Kinky Twist', category: 'Others', price: 150, duration: 300, active: true },
+      { id: 15, name: 'Passion Twist', category: 'Others', price: 170, duration: 300, active: true },
+      { id: 16, name: 'Boho Twist', category: 'Others', price: 200, duration: 420, active: true },
+    ]
+    setServices(mockServices)
   }, [])
 
-  const loadServices = async () => {
-    try {
-      const data = await serviceQueries.getAllServices()
-      setServices(data)
-    } catch (err) {
-      console.error('Failed to load services:', err)
-    } finally {
-      setLoading(false)
-    }
+  const filteredServices = selectedCategory === 'all' 
+    ? services 
+    : services.filter(s => s.category === selectedCategory)
+
+  const formatDuration = (minutes: number) => {
+    const hours = Math.floor(minutes / 60)
+    const mins = minutes % 60
+    return mins > 0 ? `${hours}h ${mins}m` : `${hours}h`
   }
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-
-    try {
-      if (editingId) {
-        await serviceQueries.updateService(editingId, formData)
-      } else {
-        await serviceQueries.createService(formData)
-      }
-      setFormData({
-        name: '',
-        description: '',
-        duration: 30,
-        price: 0,
-        image_url: '',
-        active: true,
-      })
-      setShowForm(false)
-      setEditingId(null)
-      await loadServices()
-    } catch (err) {
-      console.error('Failed to save service:', err)
+  const getCategoryColor = (category: string) => {
+    const colors: Record<string, string> = {
+      'Extensions': 'badge-primary',
+      'Braids': 'badge-secondary',
+      'Weave': 'badge-success',
+      'Others': 'badge-warning'
     }
-  }
-
-  const handleDelete = async (id: string) => {
-    if (window.confirm('Are you sure you want to delete this service?')) {
-      try {
-        await serviceQueries.deleteService(id)
-        await loadServices()
-      } catch (err) {
-        console.error('Failed to delete service:', err)
-      }
-    }
-  }
-
-  const handleEdit = (service: Service) => {
-    setFormData({
-      name: service.name,
-      description: service.description,
-      duration: service.duration,
-      price: service.price,
-      image_url: service.image_url || '',
-      active: service.active,
-    })
-    setEditingId(service.id)
-    setShowForm(true)
+    return colors[category] || 'badge-primary'
   }
 
   return (
-    <main className="min-h-screen bg-gray-100">
-      <nav className="bg-white shadow-sm">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex justify-between items-center">
-            <h1 className="text-2xl font-bold text-secondary">Services Management</h1>
-            <a href="/admin/dashboard" className="text-gray-600 hover:text-gray-900">
-              ← Back to Dashboard
-            </a>
-          </div>
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+          <h1 className="text-h2-mobile md:text-h2-desktop font-playfair text-heading">Services & Pricing</h1>
+          <p className="text-body-sm text-muted mt-1">Manage your service catalog and pricing</p>
         </div>
-      </nav>
-
-      <div className="container mx-auto px-4 py-8">
-        <button
-          onClick={() => {
-            setShowForm(!showForm)
-            setEditingId(null)
-            if (showForm) {
-              setFormData({
-                name: '',
-                description: '',
-                duration: 30,
-                price: 0,
-                image_url: '',
-                active: true,
-              })
-            }
-          }}
-          className="mb-6 bg-primary text-white px-6 py-2 rounded-lg hover:bg-pink-600 transition"
+        <button 
+          onClick={() => setShowAddModal(true)}
+          className="btn-primary w-full sm:w-auto"
         >
-          {showForm ? 'Cancel' : '+ Add Service'}
+          <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+          </svg>
+          Add Service
         </button>
+      </div>
 
-        {showForm && (
-          <div className="bg-white p-6 rounded-lg shadow-lg mb-8">
-            <h2 className="text-2xl font-bold mb-6">
-              {editingId ? 'Edit Service' : 'Add New Service'}
-            </h2>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="grid md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Service Name
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.name}
-                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg"
-                    required
-                  />
-                </div>
+      {/* Stats Cards */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="card p-4">
+          <p className="text-body-sm text-muted">Total Services</p>
+          <p className="text-2xl font-bold text-heading mt-1">{services.length}</p>
+        </div>
+        <div className="card p-4">
+          <p className="text-body-sm text-muted">Active</p>
+          <p className="text-2xl font-bold text-success mt-1">{services.filter(s => s.active).length}</p>
+        </div>
+        <div className="card p-4">
+          <p className="text-body-sm text-muted">Price Range</p>
+          <p className="text-2xl font-bold text-heading mt-1">${Math.min(...services.map(s => s.price))} - ${Math.max(...services.map(s => s.price))}</p>
+        </div>
+        <div className="card p-4">
+          <p className="text-body-sm text-muted">Categories</p>
+          <p className="text-2xl font-bold text-heading mt-1">4</p>
+        </div>
+      </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Duration (minutes)
-                  </label>
-                  <input
-                    type="number"
-                    value={formData.duration}
-                    onChange={(e) => setFormData({ ...formData, duration: parseInt(e.target.value) })}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg"
-                    required
-                  />
-                </div>
+      {/* Category Tabs */}
+      <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+        {categories.map(cat => (
+          <button
+            key={cat}
+            onClick={() => setSelectedCategory(cat)}
+            className={`
+              px-4 py-2 rounded-lg font-raleway font-medium transition-all whitespace-nowrap
+              ${selectedCategory === cat 
+                ? 'bg-primary text-white shadow-button' 
+                : 'bg-white text-muted hover:bg-primary/5 hover:text-heading'
+              }
+            `}
+          >
+            {cat === 'all' ? 'All Services' : cat}
+            <span className="ml-2 text-xs opacity-75">
+              ({cat === 'all' ? services.length : services.filter(s => s.category === cat).length})
+            </span>
+          </button>
+        ))}
+      </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Price ($)
-                  </label>
-                  <input
-                    type="number"
-                    step="0.01"
-                    value={formData.price}
-                    onChange={(e) => setFormData({ ...formData, price: parseFloat(e.target.value) })}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg"
-                    required
-                  />
-                </div>
+      {/* Services Table/Cards */}
+      <div className="card overflow-hidden">
+        {/* Desktop Table */}
+        <div className="hidden lg:block overflow-x-auto">
+          <table className="w-full">
+            <thead className="bg-background border-b border-border">
+              <tr>
+                <th className="px-6 py-4 text-left text-xs font-semibold text-muted uppercase tracking-wider">Service Name</th>
+                <th className="px-6 py-4 text-left text-xs font-semibold text-muted uppercase tracking-wider">Category</th>
+                <th className="px-6 py-4 text-left text-xs font-semibold text-muted uppercase tracking-wider">Price</th>
+                <th className="px-6 py-4 text-left text-xs font-semibold text-muted uppercase tracking-wider">Duration</th>
+                <th className="px-6 py-4 text-left text-xs font-semibold text-muted uppercase tracking-wider">Status</th>
+                <th className="px-6 py-4 text-right text-xs font-semibold text-muted uppercase tracking-wider">Actions</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-border">
+              {filteredServices.map((service) => (
+                <tr key={service.id} className="hover:bg-background/50 transition-colors">
+                  <td className="px-6 py-4">
+                    <p className="font-raleway font-semibold text-heading">{service.name}</p>
+                  </td>
+                  <td className="px-6 py-4">
+                    <span className={`badge ${getCategoryColor(service.category)}`}>
+                      {service.category}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4">
+                    <p className="font-raleway font-semibold text-heading">${service.price}</p>
+                  </td>
+                  <td className="px-6 py-4">
+                    <p className="text-body-sm text-muted">{formatDuration(service.duration)}</p>
+                  </td>
+                  <td className="px-6 py-4">
+                    <span className={`status ${service.active ? 'status-confirmed' : 'bg-gray-100 text-gray-600'}`}>
+                      {service.active ? 'Active' : 'Inactive'}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4">
+                    <div className="flex items-center justify-end gap-2">
+                      <button className="p-2 text-primary hover:bg-primary/5 rounded-lg transition-colors">
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                        </svg>
+                      </button>
+                      <button className="p-2 text-error hover:bg-error/5 rounded-lg transition-colors">
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Image URL
-                  </label>
-                  <input
-                    type="url"
-                    value={formData.image_url}
-                    onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Description
-                </label>
-                <textarea
-                  value={formData.description}
-                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg"
-                  rows={4}
-                  required
-                />
-              </div>
-
-              <div>
-                <label className="flex items-center space-x-2">
-                  <input
-                    type="checkbox"
-                    checked={formData.active}
-                    onChange={(e) => setFormData({ ...formData, active: e.target.checked })}
-                    className="rounded"
-                  />
-                  <span className="text-sm font-medium text-gray-700">Active</span>
-                </label>
-              </div>
-
-              <button
-                type="submit"
-                className="bg-secondary text-white px-6 py-2 rounded-lg hover:bg-cyan-600 transition"
-              >
-                {editingId ? 'Update Service' : 'Create Service'}
-              </button>
-            </form>
-          </div>
-        )}
-
-        {loading ? (
-          <p className="text-center text-gray-600">Loading services...</p>
-        ) : services.length === 0 ? (
-          <p className="text-center text-gray-600">No services yet. Create your first service!</p>
-        ) : (
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {services.map((service) => (
-              <div key={service.id} className="bg-white p-6 rounded-lg shadow-lg">
-                <div className="flex justify-between items-start mb-4">
-                  <h3 className="text-xl font-bold text-gray-900">{service.name}</h3>
-                  <span className={`text-xs px-2 py-1 rounded ${
-                    service.active
-                      ? 'bg-green-100 text-green-800'
-                      : 'bg-gray-100 text-gray-800'
-                  }`}>
-                    {service.active ? 'Active' : 'Inactive'}
+        {/* Mobile Cards */}
+        <div className="lg:hidden divide-y divide-border">
+          {filteredServices.map((service) => (
+            <div key={service.id} className="p-4 hover:bg-background/50 transition-colors">
+              <div className="flex items-start justify-between mb-3">
+                <div className="flex-1">
+                  <h3 className="font-raleway font-semibold text-heading mb-1">{service.name}</h3>
+                  <span className={`badge ${getCategoryColor(service.category)}`}>
+                    {service.category}
                   </span>
                 </div>
-                <p className="text-gray-600 mb-4">{service.description}</p>
-                <div className="flex justify-between text-sm text-gray-600 mb-4">
-                  <span>{service.duration} mins</span>
-                  <span className="font-bold text-primary">${service.price.toFixed(2)}</span>
+                <span className={`status ${service.active ? 'status-confirmed' : 'bg-gray-100 text-gray-600'}`}>
+                  {service.active ? 'Active' : 'Inactive'}
+                </span>
+              </div>
+              <div className="flex items-center gap-6 text-body-sm text-muted mb-3">
+                <div className="flex items-center gap-2">
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <span className="font-semibold text-heading">${service.price}</span>
                 </div>
-                <div className="flex gap-2">
-                  <button
-                    onClick={() => handleEdit(service)}
-                    className="flex-1 bg-secondary text-white py-2 rounded hover:bg-cyan-600 transition text-sm"
-                  >
-                    Edit
-                  </button>
-                  <button
-                    onClick={() => handleDelete(service.id)}
-                    className="flex-1 bg-red-500 text-white py-2 rounded hover:bg-red-600 transition text-sm"
-                  >
-                    Delete
-                  </button>
+                <div className="flex items-center gap-2">
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <span>{formatDuration(service.duration)}</span>
                 </div>
               </div>
-            ))}
-          </div>
-        )}
+              <div className="flex gap-2">
+                <button className="btn-ghost btn-sm flex-1">
+                  <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                  </svg>
+                  Edit
+                </button>
+                <button className="btn-ghost btn-sm text-error hover:bg-error/5">
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
-    </main>
+
+      {filteredServices.length === 0 && (
+        <div className="text-center py-12">
+          <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg className="w-8 h-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
+            </svg>
+          </div>
+          <p className="text-muted">No services found in this category</p>
+        </div>
+      )}
+    </div>
   )
 }
