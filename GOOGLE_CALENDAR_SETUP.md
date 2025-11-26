@@ -15,7 +15,7 @@ Your admin calendar now supports synchronization with Google Calendar! Follow th
 
 1. Go to [Google Cloud Console](https://console.cloud.google.com/)
 2. Click "Select a project" → "New Project"
-3. Name it (e.g., "Hair Salon Bookings")
+3. Name it (e.g., "HairbyLayz Bookings")
 4. Click "Create"
 
 ### 2. Enable Google Calendar API
@@ -39,7 +39,7 @@ Your admin calendar now supports synchronization with Google Calendar! Follow th
 
 4. Create OAuth client ID:
    - Application type: **Web application**
-   - Name: "Hair Salon Admin"
+   - Name: "HairbyLayz Admin"
    - Authorized redirect URIs: Add these URLs:
      - `http://localhost:3000/admin/calendar/callback` (for local development)
      - `https://yourdomain.com/admin/calendar/callback` (replace with your actual domain)

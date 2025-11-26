@@ -17,7 +17,7 @@ const raleway = Raleway({
 })
 
 export const metadata: Metadata = {
-  title: 'Elite Hair Studio - Mobile Hairstyling',
+  title: 'HairbyLayz - Mobile Hairstyling',
   description: 'Professional mobile hairstyling services. Book your appointment today.',
 }
 

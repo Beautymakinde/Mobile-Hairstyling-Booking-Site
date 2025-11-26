@@ -14,7 +14,7 @@ export default function ClientLayout({ children }: { children: ReactNode }) {
           <div className="flex items-center justify-between">
             {/* Logo */}
             <Link href="/" className="text-2xl md:text-3xl font-playfair font-bold text-primary hover:text-primary-light transition-colors">
-              Elite Hair Studio
+              HairbyLayz
             </Link>
 
             {/* Desktop Navigation */}
@@ -100,7 +100,7 @@ export default function ClientLayout({ children }: { children: ReactNode }) {
           <div className="grid md:grid-cols-3 gap-8 mb-8">
             {/* Column 1 */}
             <div>
-              <h3 className="text-2xl font-playfair font-bold mb-4">Elite Hair Studio</h3>
+              <h3 className="text-2xl font-playfair font-bold mb-4">HairbyLayz</h3>
               <p className="text-white/80 mb-4 font-raleway">
                 Professional mobile hairstyling services brought to your doorstep.
               </p>
@@ -159,7 +159,7 @@ export default function ClientLayout({ children }: { children: ReactNode }) {
                   <svg className="w-5 h-5 mt-1 flex-shrink-0 text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                   </svg>
-                  <span>hello@elitehairstudio.com</span>
+                  <span>hello@hairbylayz.com</span>
                 </li>
                 <li className="flex items-start gap-3">
                   <svg className="w-5 h-5 mt-1 flex-shrink-0 text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -174,7 +174,7 @@ export default function ClientLayout({ children }: { children: ReactNode }) {
 
           {/* Bottom Bar */}
           <div className="border-t border-white/10 pt-8 text-center text-white/60 text-sm font-raleway">
-            <p>© {new Date().getFullYear()} Elite Hair Studio. All rights reserved.</p>
+            <p>© {new Date().getFullYear()} HairbyLayz. All rights reserved.</p>
           </div>
         </div>
       </footer>
