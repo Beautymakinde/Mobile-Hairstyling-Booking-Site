@@ -87,4 +87,18 @@ export const bookingQueries = {
     if (error) throw error
     return data || []
   },
+
+  // Get bookings by date range (for calendar)
+  async getBookingsByDateRange(startDate: string, endDate: string): Promise<(Booking & { clients: Client })[]> {
+    const { data, error } = await supabase
+      .from('bookings')
+      .select('*, clients(*)')
+      .gte('date', startDate)
+      .lte('date', endDate)
+      .neq('status', 'cancelled')
+      .order('date', { ascending: true })
+
+    if (error) throw error
+    return data || []
+  },
 }
