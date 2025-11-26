@@ -116,8 +116,8 @@ export default function HomePage() {
                     </svg>
                   </div>
                   <div>
-                    <h4 className="font-raleway font-semibold text-heading mb-1">Licensed & Insured</h4>
-                    <p className="text-body-sm text-muted">Professional certification with full insurance</p>
+                    <h4 className="font-raleway font-semibold text-heading mb-1">Save Time & Money</h4>
+                    <p className="text-body-sm text-muted">No travel costs or commute - I bring the salon to you</p>
                   </div>
                 </div>
                 
@@ -128,8 +128,8 @@ export default function HomePage() {
                     </svg>
                   </div>
                   <div>
-                    <h4 className="font-raleway font-semibold text-heading mb-1">10+ Years Experience</h4>
-                    <p className="text-body-sm text-muted">Expert in all braiding and extension techniques</p>
+                    <h4 className="font-raleway font-semibold text-heading mb-1">Comfort & Privacy</h4>
+                    <p className="text-body-sm text-muted">Relax in your own space with personalized attention</p>
                   </div>
                 </div>
                 
@@ -140,8 +140,8 @@ export default function HomePage() {
                     </svg>
                   </div>
                   <div>
-                    <h4 className="font-raleway font-semibold text-heading mb-1">Mobile Convenience</h4>
-                    <p className="text-body-sm text-muted">I come to you - comfort of your home</p>
+                    <h4 className="font-raleway font-semibold text-heading mb-1">Flexible Scheduling</h4>
+                    <p className="text-body-sm text-muted">Book appointments that fit your busy lifestyle</p>
                   </div>
                 </div>
               </div>
