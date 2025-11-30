@@ -1,6 +1,7 @@
 import { supabase } from './client'
 
 const BUCKET_NAME = 'booking-receipts'
+const SERVICES_BUCKET = 'service-images'
 
 export const storageQueries = {
   // Initialize bucket (run once during setup)
@@ -16,6 +17,54 @@ export const storageQueries = {
         fileSizeLimit: 5242880, // 5MB
       })
     }
+  },
+
+  // Initialize services bucket
+  async initializeServicesBucket(): Promise<void> {
+    try {
+      await supabase.storage.getBucket(SERVICES_BUCKET)
+    } catch (error) {
+      await supabase.storage.createBucket(SERVICES_BUCKET, {
+        public: true,
+        allowedMimeTypes: ['image/jpeg', 'image/png', 'image/gif', 'image/webp'],
+        fileSizeLimit: 5242880, // 5MB
+      })
+    }
+  },
+
+  // Upload service image
+  async uploadServiceImage(
+    serviceId: string,
+    file: File
+  ): Promise<{ path: string; url: string }> {
+    if (!file) throw new Error('No file provided')
+    if (file.size > 5242880) throw new Error('File size exceeds 5MB limit')
+
+    const fileExt = file.name.split('.').pop()
+    const fileName = `${serviceId}-${Date.now()}.${fileExt}`
+    const filePath = `services/${fileName}`
+
+    const { error: uploadError } = await supabase.storage
+      .from(SERVICES_BUCKET)
+      .upload(filePath, file, { upsert: false })
+
+    if (uploadError) throw uploadError
+
+    const { data } = supabase.storage.from(SERVICES_BUCKET).getPublicUrl(filePath)
+
+    return {
+      path: filePath,
+      url: data.publicUrl,
+    }
+  },
+
+  // Delete service image
+  async deleteServiceImage(filePath: string): Promise<void> {
+    const { error } = await supabase.storage
+      .from(SERVICES_BUCKET)
+      .remove([filePath])
+
+    if (error) throw error
   },
 
   // Upload receipt image
