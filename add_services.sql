@@ -2,8 +2,11 @@
 ALTER TABLE services ADD COLUMN IF NOT EXISTS category text;
 ALTER TABLE services ADD COLUMN IF NOT EXISTS image_path text;
 
--- Update column names to match TypeScript types (create views or rename columns)
--- Note: We'll keep using the original column names in SQL but map them in the app
+-- Update existing services with categories
+UPDATE services SET category = 'Extensions' WHERE name IN ('Quickweave', 'Ponytail', 'Traditional Sew-in');
+UPDATE services SET category = 'Braids' WHERE name IN ('Medium Knotless Braids', 'French Curls', 'Boho Braids');
+UPDATE services SET category = 'Weave' WHERE name IN ('Big Stitch Braids', 'Small Stitch Braids', 'Lemonade Braids', 'Weaved Ponytail', 'Fulani Braids');
+UPDATE services SET category = 'Others' WHERE name IN ('Softlocs', 'Crochet', 'Kinky Twist', 'Passion Twist', 'Boho Twist');
 
 -- Insert all services with correct pricing and durations
 -- Extension Services

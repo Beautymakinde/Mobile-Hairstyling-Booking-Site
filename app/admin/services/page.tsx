@@ -146,20 +146,30 @@ export default function ServicesPage() {
 
       // Upload new image if selected
       if (imageFile) {
-        // Delete old image if exists
-        if (editingService?.image_path) {
-          try {
-            await storageQueries.deleteServiceImage(editingService.image_path)
-          } catch (error) {
-            console.error('Error deleting old image:', error)
+        try {
+          // Initialize bucket if needed
+          await storageQueries.initializeServicesBucket()
+          
+          // Delete old image if exists
+          if (editingService?.image_path) {
+            try {
+              await storageQueries.deleteServiceImage(editingService.image_path)
+            } catch (error) {
+              console.error('Error deleting old image:', error)
+            }
           }
-        }
 
-        // Upload new image
-        const serviceId = editingService?.id || `temp-${Date.now()}`
-        const uploaded = await storageQueries.uploadServiceImage(serviceId, imageFile)
-        imageUrl = uploaded.url
-        imagePath = uploaded.path
+          // Upload new image
+          const serviceId = editingService?.id || `temp-${Date.now()}`
+          const uploaded = await storageQueries.uploadServiceImage(serviceId, imageFile)
+          imageUrl = uploaded.url
+          imagePath = uploaded.path
+        } catch (uploadError: any) {
+          console.error('Image upload error:', uploadError)
+          alert(`Failed to upload image: ${uploadError.message || 'Unknown error'}`)
+          setUploading(false)
+          return
+        }
       }
 
       const serviceData = {
@@ -182,9 +192,9 @@ export default function ServicesPage() {
       await loadServices()
       handleCloseModal()
       alert(editingService ? 'Service updated successfully!' : 'Service created successfully!')
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error saving service:', error)
-      alert('Failed to save service. Please try again.')
+      alert(`Failed to save service: ${error.message || 'Please try again.'}`)
     } finally {
       setUploading(false)
     }
