@@ -46,10 +46,11 @@ export default function ServicesPage() {
     try {
       setLoading(true)
       const data = await serviceQueries.getAllServices()
+      console.log('Loaded services:', data)
       setServices(data as any)
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error loading services:', error)
-      alert('Failed to load services')
+      alert(`Failed to load services: ${error.message || 'Unknown error'}`)
     } finally {
       setLoading(false)
     }
