@@ -44,11 +44,15 @@ export const storageQueries = {
     const fileName = `${serviceId}-${Date.now()}.${fileExt}`
     const filePath = `services/${fileName}`
 
+    // Try to upload to the bucket
     const { error: uploadError } = await supabase.storage
       .from(SERVICES_BUCKET)
-      .upload(filePath, file, { upsert: false })
+      .upload(filePath, file, { upsert: true })
 
-    if (uploadError) throw uploadError
+    if (uploadError) {
+      console.error('Upload error:', uploadError)
+      throw new Error(uploadError.message || 'Failed to upload image')
+    }
 
     const { data } = supabase.storage.from(SERVICES_BUCKET).getPublicUrl(filePath)
 

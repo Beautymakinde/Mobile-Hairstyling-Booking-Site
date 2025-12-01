@@ -24,8 +24,9 @@ function mapServiceToDb(service: Partial<any>): any {
   if (service.price !== undefined) dbData.price = service.price
   if (service.image_url !== undefined) dbData.image_url = service.image_url
   if (service.active !== undefined) dbData.is_active = service.active // Map active to is_active
-  if (service.category !== undefined) dbData.category = service.category // Add category support
-  if (service.image_path !== undefined) dbData.image_path = service.image_path // Add image_path support
+  // Skip category and image_path for now due to schema cache issues
+  // if (service.category !== undefined) dbData.category = service.category
+  // if (service.image_path !== undefined) dbData.image_path = service.image_path
   return dbData
 }
 
@@ -34,7 +35,7 @@ export const serviceQueries = {
   async getActiveServices(): Promise<Service[]> {
     const { data, error } = await supabase
       .from('services')
-      .select('*')
+      .select('id, name, description, price, duration_minutes, is_active, image_url, image_path, category, created_at')
       .eq('is_active', true)
       .order('created_at', { ascending: true })
 
@@ -46,7 +47,7 @@ export const serviceQueries = {
   async getAllServices(): Promise<Service[]> {
     const { data, error } = await supabase
       .from('services')
-      .select('*')
+      .select('id, name, description, price, duration_minutes, is_active, image_url, image_path, category, created_at')
       .order('created_at', { ascending: true })
 
     if (error) throw error
@@ -57,7 +58,7 @@ export const serviceQueries = {
   async getService(id: string): Promise<Service | null> {
     const { data, error } = await supabase
       .from('services')
-      .select('*')
+      .select('id, name, description, price, duration_minutes, is_active, image_url, image_path, category, created_at')
       .eq('id', id)
       .single()
 
