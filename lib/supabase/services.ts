@@ -3,7 +3,7 @@ import { Service } from '../types/database'
 
 // Map database columns to TypeScript interface
 function mapDbToService(dbRow: any): Service {
-  return {
+  const service: any = {
     id: dbRow.id,
     name: dbRow.name,
     description: dbRow.description,
@@ -12,10 +12,13 @@ function mapDbToService(dbRow: any): Service {
     image_url: dbRow.image_url,
     active: dbRow.is_active, // Map is_active to active
     created_at: dbRow.created_at,
-    // Include category and image_path if they exist
-    ...(dbRow.category && { category: dbRow.category }),
-    ...(dbRow.image_path && { image_path: dbRow.image_path }),
   }
+  
+  // Include category and image_path if they exist
+  if (dbRow.category !== undefined) service.category = dbRow.category
+  if (dbRow.image_path !== undefined) service.image_path = dbRow.image_path
+  
+  return service
 }
 
 // Map TypeScript interface to database columns
