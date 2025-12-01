@@ -9,7 +9,7 @@ type Service = {
   id: string
   name: string
   description?: string
-  category: string
+  category?: string
   price: number
   duration: number
   active: boolean
@@ -57,7 +57,7 @@ export default function ServicesPage() {
 
   const filteredServices = selectedCategory === 'all' 
     ? services 
-    : services.filter(s => s.category === selectedCategory)
+    : services.filter(s => s.category === selectedCategory || (!s.category && selectedCategory === 'Others'))
 
   const formatDuration = (minutes: number) => {
     const hours = Math.floor(minutes / 60)
@@ -81,7 +81,7 @@ export default function ServicesPage() {
       setFormData({
         name: service.name,
         description: service.description || '',
-        category: service.category,
+        category: service.category || 'Extensions',
         price: service.price.toString(),
         duration: service.duration.toString(),
         active: service.active,
@@ -273,7 +273,7 @@ export default function ServicesPage() {
           >
             {cat === 'all' ? 'All Services' : cat}
             <span className="ml-2 text-xs opacity-75">
-              ({cat === 'all' ? services.length : services.filter(s => s.category === cat).length})
+              ({cat === 'all' ? services.length : services.filter(s => s.category === cat || (!s.category && cat === 'Others')).length})
             </span>
           </button>
         ))}
@@ -324,9 +324,11 @@ export default function ServicesPage() {
               <div className="p-4">
                 <div className="mb-3">
                   <h3 className="font-raleway font-semibold text-heading mb-1">{service.name}</h3>
-                  <span className={`badge ${getCategoryColor(service.category)}`}>
-                    {service.category}
-                  </span>
+                  {service.category && (
+                    <span className={`badge ${getCategoryColor(service.category)}`}>
+                      {service.category}
+                    </span>
+                  )}
                 </div>
 
                 {service.description && (

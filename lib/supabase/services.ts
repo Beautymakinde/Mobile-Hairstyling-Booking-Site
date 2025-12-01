@@ -16,7 +16,7 @@ function mapDbToService(dbRow: any): Service {
 }
 
 // Map TypeScript interface to database columns
-function mapServiceToDb(service: Partial<Service>): any {
+function mapServiceToDb(service: Partial<any>): any {
   const dbData: any = {}
   if (service.name !== undefined) dbData.name = service.name
   if (service.description !== undefined) dbData.description = service.description
@@ -24,6 +24,8 @@ function mapServiceToDb(service: Partial<Service>): any {
   if (service.price !== undefined) dbData.price = service.price
   if (service.image_url !== undefined) dbData.image_url = service.image_url
   if (service.active !== undefined) dbData.is_active = service.active // Map active to is_active
+  if (service.category !== undefined) dbData.category = service.category // Add category support
+  if (service.image_path !== undefined) dbData.image_path = service.image_path // Add image_path support
   return dbData
 }
 
