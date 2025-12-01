@@ -41,7 +41,7 @@ export const serviceQueries = {
   async getActiveServices(): Promise<Service[]> {
     const { data, error } = await supabase
       .from('services')
-      .select('id, name, description, price, duration_minutes, is_active, image_url, image_path, category, created_at')
+      .select('id, name, description, price, duration_minutes, is_active, image_url, created_at')
       .eq('is_active', true)
       .order('created_at', { ascending: true })
 
@@ -53,7 +53,7 @@ export const serviceQueries = {
   async getAllServices(): Promise<Service[]> {
     const { data, error } = await supabase
       .from('services')
-      .select('id, name, description, price, duration_minutes, is_active, image_url, image_path, category, created_at')
+      .select('id, name, description, price, duration_minutes, is_active, image_url, created_at')
       .order('created_at', { ascending: true })
 
     if (error) throw error
@@ -64,7 +64,7 @@ export const serviceQueries = {
   async getService(id: string): Promise<Service | null> {
     const { data, error } = await supabase
       .from('services')
-      .select('id, name, description, price, duration_minutes, is_active, image_url, image_path, category, created_at')
+      .select('id, name, description, price, duration_minutes, is_active, image_url, created_at')
       .eq('id', id)
       .single()
 
