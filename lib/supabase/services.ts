@@ -9,12 +9,13 @@ function mapDbToService(dbRow: any): Service {
     description: dbRow.description,
     duration: dbRow.duration_minutes, // Map duration_minutes to duration
     price: dbRow.price,
-    image_url: dbRow.image_url,
+    image_url: null, // Default to null since column doesn't exist yet
     active: dbRow.is_active, // Map is_active to active
     created_at: dbRow.created_at,
   }
   
-  // Include category and image_path if they exist
+  // Include optional fields if they exist
+  if (dbRow.image_url !== undefined) service.image_url = dbRow.image_url
   if (dbRow.category !== undefined) service.category = dbRow.category
   if (dbRow.image_path !== undefined) service.image_path = dbRow.image_path
   
@@ -41,7 +42,7 @@ export const serviceQueries = {
   async getActiveServices(): Promise<Service[]> {
     const { data, error } = await supabase
       .from('services')
-      .select('id, name, description, price, duration_minutes, is_active, image_url, created_at')
+      .select('id, name, description, price, duration_minutes, is_active, created_at')
       .eq('is_active', true)
       .order('created_at', { ascending: true })
 
@@ -53,7 +54,7 @@ export const serviceQueries = {
   async getAllServices(): Promise<Service[]> {
     const { data, error } = await supabase
       .from('services')
-      .select('id, name, description, price, duration_minutes, is_active, image_url, created_at')
+      .select('id, name, description, price, duration_minutes, is_active, created_at')
       .order('created_at', { ascending: true })
 
     if (error) throw error
@@ -64,7 +65,7 @@ export const serviceQueries = {
   async getService(id: string): Promise<Service | null> {
     const { data, error } = await supabase
       .from('services')
-      .select('id, name, description, price, duration_minutes, is_active, image_url, created_at')
+      .select('id, name, description, price, duration_minutes, is_active, created_at')
       .eq('id', id)
       .single()
 
