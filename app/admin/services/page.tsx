@@ -148,9 +148,6 @@ export default function ServicesPage() {
       // Upload new image if selected
       if (imageFile) {
         try {
-          // Initialize bucket if needed
-          await storageQueries.initializeServicesBucket()
-          
           // Delete old image if exists
           if (editingService?.image_path) {
             try {
