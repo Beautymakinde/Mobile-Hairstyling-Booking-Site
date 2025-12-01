@@ -1,44 +1,56 @@
 import { supabase } from './client'
 
 export const settingsQueries = {
-  // Get admin settings
+  // Get admin settings (using key-value structure)
   async getSettings(): Promise<any> {
     const { data, error } = await supabase
       .from('admin_settings')
-      .select('*')
-      .single()
+      .select('setting_key, setting_value')
 
-    if (error && error.code === 'PGRST116') {
-      // No settings yet, return defaults
+    if (error) {
+      console.error('Error fetching settings:', error)
       return null
     }
-    if (error) throw error
-    return data
+
+    // Convert key-value pairs to object
+    const settings: any = {}
+    if (data) {
+      data.forEach((row: any) => {
+        try {
+          settings[row.setting_key] = JSON.parse(row.setting_value)
+        } catch {
+          settings[row.setting_key] = row.setting_value
+        }
+      })
+    }
+
+    return settings
   },
 
-  // Create or update admin settings
+  // Create or update admin settings (using key-value structure)
   async upsertSettings(settings: any): Promise<any> {
-    const existing = await this.getSettings()
+    // Convert settings object to key-value array
+    const updates = Object.entries(settings).map(([key, value]) => ({
+      setting_key: key,
+      setting_value: typeof value === 'string' ? value : JSON.stringify(value),
+      updated_at: new Date().toISOString(),
+    }))
 
-    if (existing) {
-      const { data, error } = await supabase
+    // Upsert each setting
+    for (const update of updates) {
+      const { error } = await supabase
         .from('admin_settings')
-        .update(settings)
-        .eq('id', existing.id)
-        .select()
-        .single()
+        .upsert(update, { 
+          onConflict: 'setting_key',
+          ignoreDuplicates: false 
+        })
 
-      if (error) throw error
-      return data
-    } else {
-      const { data, error } = await supabase
-        .from('admin_settings')
-        .insert([settings])
-        .select()
-        .single()
-
-      if (error) throw error
-      return data
+      if (error) {
+        console.error('Error upserting setting:', error)
+        throw error
+      }
     }
+
+    return settings
   },
 }
