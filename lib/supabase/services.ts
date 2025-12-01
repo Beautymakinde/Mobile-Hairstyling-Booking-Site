@@ -12,6 +12,9 @@ function mapDbToService(dbRow: any): Service {
     image_url: dbRow.image_url,
     active: dbRow.is_active, // Map is_active to active
     created_at: dbRow.created_at,
+    // Include category and image_path if they exist
+    ...(dbRow.category && { category: dbRow.category }),
+    ...(dbRow.image_path && { image_path: dbRow.image_path }),
   }
 }
 
