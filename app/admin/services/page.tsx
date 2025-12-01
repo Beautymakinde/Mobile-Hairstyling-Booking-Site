@@ -175,12 +175,13 @@ export default function ServicesPage() {
       const serviceData = {
         name: formData.name,
         description: formData.description,
-        category: formData.category,
+        // Skip category and image_path until schema cache refreshes
+        // category: formData.category,
         price: parseFloat(formData.price),
         duration: parseInt(formData.duration),
         active: formData.active,
         image_url: imageUrl,
-        image_path: imagePath,
+        // image_path: imagePath,
       }
 
       if (editingService) {
