@@ -124,6 +124,8 @@ export interface BookingRequest {
 
 export async function createBookingRequest(request: BookingRequest): Promise<any> {
   try {
+    console.log('Creating booking request for:', request.client_email)
+    
     // First, create or get the client record
     const client = await clientQueries.upsertClient({
       name: request.client_name,
@@ -133,6 +135,8 @@ export async function createBookingRequest(request: BookingRequest): Promise<any
       hair_info: null,
       notes: request.notes || null,
     })
+
+    console.log('Client record ready, ID:', client.id)
 
     // Then create the booking with the client_id
     const { data, error } = await supabase
@@ -158,6 +162,8 @@ export async function createBookingRequest(request: BookingRequest): Promise<any
       console.error('Supabase booking error details:', JSON.stringify(error, null, 2))
       throw error
     }
+    
+    console.log('Booking created successfully:', data.id)
     return data
   } catch (error) {
     console.error('Error creating booking with client:', error)
