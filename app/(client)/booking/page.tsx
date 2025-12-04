@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import { getServiceById } from '@/lib/supabase/services'
 import { createBookingRequest } from '@/lib/supabase/bookings'
 import { getSettings } from '@/lib/supabase/settings'
+import { sendSimpleBookingEmails } from '@/lib/notifications/bookingEmails'
 
 interface Service {
   id: string
@@ -70,7 +71,7 @@ function BookingContent() {
       setSubmitting(true)
       
       // Create booking request
-      await createBookingRequest({
+      const booking = await createBookingRequest({
         service_id: service.id,
         client_name: formData.name,
         client_email: formData.email,
@@ -85,6 +86,24 @@ function BookingContent() {
       const settings = await getSettings()
       if (settings.zelle_info) {
         setZelleInfo(settings.zelle_info)
+      }
+      
+      // Send email notifications
+      try {
+        await sendSimpleBookingEmails({
+          clientName: formData.name,
+          clientEmail: formData.email,
+          serviceName: service.name,
+          servicePrice: service.price,
+          date: formData.date,
+          time: formData.time,
+          location: formData.location,
+          zelleEmail: settings.zelle_info?.email,
+          zellePhone: settings.zelle_info?.phone,
+        })
+      } catch (emailError) {
+        console.error('Email notification failed:', emailError)
+        // Don't fail the booking if email fails
       }
       
       setSuccess(true)
@@ -210,7 +229,7 @@ function BookingContent() {
             {/* Confirmation Email Notice */}
             <div className="bg-background p-4 rounded-lg mb-6 text-sm">
               <p className="text-muted">
-                A confirmation email has been sent to <strong className="text-heading">{formData.email}</strong>
+                Your booking request has been received. You will receive a confirmation email at <strong className="text-heading">{formData.email}</strong> once we review your request.
               </p>
             </div>
 
