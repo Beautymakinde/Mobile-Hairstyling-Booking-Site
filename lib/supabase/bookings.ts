@@ -19,7 +19,8 @@ export const bookingQueries = {
     const { data, error } = await supabase
       .from('bookings')
       .select('*')
-      .eq('date', date)
+      .gte('start_time', `${date} 00:00:00`)
+      .lte('start_time', `${date} 23:59:59`)
       .neq('status', 'cancelled')
 
     if (error) throw error
@@ -78,11 +79,11 @@ export const bookingQueries = {
 
     if (filters?.dateStart && filters?.dateEnd) {
       query = query
-        .gte('date', filters.dateStart)
-        .lte('date', filters.dateEnd)
+        .gte('start_time', filters.dateStart)
+        .lte('start_time', filters.dateEnd)
     }
 
-    const { data, error } = await query.order('date', { ascending: false })
+    const { data, error } = await query.order('start_time', { ascending: false })
 
     if (error) throw error
     return data || []
@@ -93,10 +94,10 @@ export const bookingQueries = {
     const { data, error } = await supabase
       .from('bookings')
       .select('*, clients(*)')
-      .gte('date', startDate)
-      .lte('date', endDate)
+      .gte('start_time', startDate)
+      .lte('start_time', endDate)
       .neq('status', 'cancelled')
-      .order('date', { ascending: true })
+      .order('start_time', { ascending: true })
 
     if (error) throw error
     return data || []
