@@ -59,12 +59,35 @@ export default function AdminSettingsPage() {
     setSaving(true)
 
     try {
+      let businessHours
+      try {
+        businessHours = formData.business_hours ? JSON.parse(formData.business_hours) : {
+          Monday: { start: '09:00', end: '17:00' },
+          Tuesday: { start: '09:00', end: '17:00' },
+          Wednesday: { start: '09:00', end: '17:00' },
+          Thursday: { start: '09:00', end: '17:00' },
+          Friday: { start: '09:00', end: '17:00' },
+          Saturday: { start: '10:00', end: '15:00' },
+          Sunday: { start: 'Closed', end: 'Closed' },
+        }
+      } catch {
+        businessHours = {
+          Monday: { start: '09:00', end: '17:00' },
+          Tuesday: { start: '09:00', end: '17:00' },
+          Wednesday: { start: '09:00', end: '17:00' },
+          Thursday: { start: '09:00', end: '17:00' },
+          Friday: { start: '09:00', end: '17:00' },
+          Saturday: { start: '10:00', end: '15:00' },
+          Sunday: { start: 'Closed', end: 'Closed' },
+        }
+      }
+
       await settingsQueries.upsertSettings({
         zelle_info: {
           email: formData.zelle_email,
           phone: formData.zelle_phone,
         },
-        business_hours: JSON.parse(formData.business_hours),
+        business_hours: businessHours,
         notification_email: formData.notification_email,
         notification_phone: formData.notification_phone,
         service_area: formData.service_area,
