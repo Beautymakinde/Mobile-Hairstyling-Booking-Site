@@ -88,9 +88,10 @@ function BookingContent() {
       }
       
       setSuccess(true)
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error creating booking:', error)
-      alert('Failed to submit booking request. Please try again or contact us directly.')
+      const errorMessage = error?.message || error?.error_description || 'Unknown error'
+      alert(`Failed to submit booking request: ${errorMessage}\n\nPlease try again or contact us directly.`)
     } finally {
       setSubmitting(false)
     }

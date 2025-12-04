@@ -117,8 +117,8 @@ export interface BookingRequest {
 }
 
 export async function createBookingRequest(request: BookingRequest): Promise<any> {
-  // Combine date and time for start_time
-  const startDateTime = `${request.date} ${request.preferred_time}`
+  // Combine date and time into proper timestamp format
+  const startDateTime = `${request.date}T${request.preferred_time}:00`
   
   const { data, error } = await supabase
     .from('bookings')
@@ -137,6 +137,9 @@ export async function createBookingRequest(request: BookingRequest): Promise<any
     .select()
     .single()
 
-  if (error) throw error
+  if (error) {
+    console.error('Supabase booking error:', error)
+    throw error
+  }
   return data
 }
