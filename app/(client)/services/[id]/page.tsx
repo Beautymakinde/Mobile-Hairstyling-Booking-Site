@@ -175,7 +175,7 @@ export default function ServiceDetailPage() {
                 </svg>
                 <div className="text-sm text-blue-900">
                   <p className="font-medium mb-1">Mobile Service</p>
-                  <p>I come to your location within the Greater Metro Area. Travel fees may apply for locations outside the standard service area.</p>
+                  <p>I come to your location within the Chicago area. Travel fees may apply for locations outside the standard service area. Contact me at <a href="tel:8723604239" className="text-blue-700 hover:underline">(872) 360-4239</a> if you have questions about your location.</p>
                 </div>
               </div>
             </div>
