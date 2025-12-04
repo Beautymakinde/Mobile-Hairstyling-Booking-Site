@@ -128,6 +128,7 @@ export async function createBookingRequest(request: BookingRequest): Promise<any
       client_name: request.client_name,
       client_email: request.client_email,
       client_phone: request.client_phone,
+      booking_date: request.date, // Add the booking_date field
       preferred_time: request.preferred_time,
       location: request.location,
       notes: request.notes || '',
