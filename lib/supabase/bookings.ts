@@ -124,6 +124,7 @@ export async function createBookingRequest(request: BookingRequest): Promise<any
     .from('bookings')
     .insert([{
       service_id: request.service_id,
+      client_id: null, // No client record yet, storing info directly in booking
       client_name: request.client_name,
       client_email: request.client_email,
       client_phone: request.client_phone,
@@ -132,13 +133,14 @@ export async function createBookingRequest(request: BookingRequest): Promise<any
       notes: request.notes || '',
       status: 'pending',
       start_time: startDateTime,
-      end_time: startDateTime, // Temporary, will be calculated based on service duration
+      end_time: startDateTime,
+      deposit_receipt_url: null,
     }])
     .select()
     .single()
 
   if (error) {
-    console.error('Supabase booking error:', error)
+    console.error('Supabase booking error details:', JSON.stringify(error, null, 2))
     throw error
   }
   return data
