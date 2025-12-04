@@ -1,5 +1,6 @@
 import { supabase } from './client'
 import { Booking, Client } from '../types/database'
+import { clientQueries } from './clients'
 
 export const bookingQueries = {
   // Create a new booking
@@ -122,28 +123,44 @@ export interface BookingRequest {
 }
 
 export async function createBookingRequest(request: BookingRequest): Promise<any> {
-  const { data, error } = await supabase
-    .from('bookings')
-    .insert([{
-      service_id: request.service_id,
-      client_id: null, // No client record yet, storing info directly in booking
-      client_name: request.client_name,
-      client_email: request.client_email,
-      client_phone: request.client_phone,
-      booking_date: request.date,
-      preferred_time: request.preferred_time,
-      location: request.location,
-      notes: request.notes || '',
-      status: 'pending',
-      start_time: request.preferred_time, // Just the time, not timestamp
-      end_time: request.preferred_time, // Will be calculated later based on service duration
-    }])
-    .select()
-    .single()
+  try {
+    // First, create or get the client record
+    const client = await clientQueries.upsertClient({
+      name: request.client_name,
+      email: request.client_email,
+      phone: request.client_phone,
+      address: request.location,
+      hair_info: null,
+      notes: request.notes || null,
+    })
 
-  if (error) {
-    console.error('Supabase booking error details:', JSON.stringify(error, null, 2))
+    // Then create the booking with the client_id
+    const { data, error } = await supabase
+      .from('bookings')
+      .insert([{
+        service_id: request.service_id,
+        client_id: client.id, // Link to the client record
+        client_name: request.client_name,
+        client_email: request.client_email,
+        client_phone: request.client_phone,
+        booking_date: request.date,
+        preferred_time: request.preferred_time,
+        location: request.location,
+        notes: request.notes || '',
+        status: 'pending',
+        start_time: request.preferred_time, // Just the time, not timestamp
+        end_time: request.preferred_time, // Will be calculated later based on service duration
+      }])
+      .select()
+      .single()
+
+    if (error) {
+      console.error('Supabase booking error details:', JSON.stringify(error, null, 2))
+      throw error
+    }
+    return data
+  } catch (error) {
+    console.error('Error creating booking with client:', error)
     throw error
   }
-  return data
 }
