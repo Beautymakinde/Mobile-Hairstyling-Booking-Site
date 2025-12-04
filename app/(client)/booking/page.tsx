@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { Suspense, useEffect, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { getServiceById } from '@/lib/supabase/services'
 
@@ -15,7 +15,7 @@ interface Service {
   image_url: string | null
 }
 
-export default function BookingPage() {
+function BookingContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const serviceId = searchParams.get('service')
@@ -292,5 +292,20 @@ export default function BookingPage() {
         </form>
       </div>
     </main>
+  )
+}
+
+export default function BookingPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin w-12 h-12 border-4 border-primary border-t-transparent rounded-full mx-auto mb-4"></div>
+          <p className="text-muted">Loading...</p>
+        </div>
+      </div>
+    }>
+      <BookingContent />
+    </Suspense>
   )
 }
