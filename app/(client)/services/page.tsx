@@ -2,14 +2,17 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
+import { getServices } from '@/lib/supabase/services'
 
 type Service = {
-  id: number
+  id: string
   name: string
-  category: string
+  category?: string
   price: number
   duration: number
   description?: string
+  image_url?: string
 }
 
 export default function ServicesPage() {
@@ -26,34 +29,21 @@ export default function ServicesPage() {
   ]
 
   useEffect(() => {
-    // Mock data - Replace with real Supabase fetch
-    setTimeout(() => {
-      const mockServices: Service[] = [
-        // Extensions
-        { id: 1, name: 'Quickweave', category: 'Extensions', price: 140, duration: 180, description: 'Fast and fabulous sew-in weave installation' },
-        { id: 2, name: 'Ponytail Extension', category: 'Extensions', price: 100, duration: 120, description: 'Sleek and stylish ponytail extensions' },
-        { id: 3, name: 'Traditional Sew-in', category: 'Extensions', price: 180, duration: 180, description: 'Classic full sew-in weave installation' },
-        // Braids
-        { id: 4, name: 'Medium Knotless Braids', category: 'Braids', price: 200, duration: 360, description: 'Protective style with no tension on scalp' },
-        { id: 5, name: 'French Curls', category: 'Braids', price: 200, duration: 300, description: 'Elegant curly braids with bouncy finish' },
-        { id: 6, name: 'Boho Braids', category: 'Braids', price: 250, duration: 540, description: 'Trendy bohemian style with curly ends' },
-        // Weave
-        { id: 7, name: 'Big Stitch Braids', category: 'Weave', price: 150, duration: 240, description: 'Large cornrows for bold statement looks' },
-        { id: 8, name: 'Small Stitch Braids', category: 'Weave', price: 250, duration: 360, description: 'Intricate small braids for detailed styles' },
-        { id: 9, name: 'Lemonade Braids', category: 'Weave', price: 200, duration: 360, description: 'Side-swept braids inspired by Beyoncé' },
-        { id: 10, name: 'Weaved Ponytail', category: 'Weave', price: 200, duration: 300, description: 'High ponytail with weave extensions' },
-        { id: 11, name: 'Fulani Braids', category: 'Weave', price: 200, duration: 300, description: 'Traditional African braiding style with beads' },
-        // Others
-        { id: 12, name: 'Softlocs', category: 'Others', price: 150, duration: 300, description: 'Soft faux locs for natural protective style' },
-        { id: 13, name: 'Crochet', category: 'Others', price: 130, duration: 240, description: 'Quick protective style using crochet method' },
-        { id: 14, name: 'Kinky Twist', category: 'Others', price: 150, duration: 300, description: 'Natural looking twisted protective style' },
-        { id: 15, name: 'Passion Twist', category: 'Others', price: 170, duration: 300, description: 'Soft and bouncy twisted style' },
-        { id: 16, name: 'Boho Twist', category: 'Others', price: 200, duration: 420, description: 'Bohemian twists with curly accent pieces' },
-      ]
-      setServices(mockServices)
-      setLoading(false)
-    }, 500)
+    loadServices()
   }, [])
+
+  const loadServices = async () => {
+    try {
+      setLoading(true)
+      const data = await getServices()
+      console.log('Loaded services:', data)
+      setServices(data as any)
+    } catch (error) {
+      console.error('Error loading services:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
 
   const filteredServices = selectedCategory === 'all' 
     ? services 
@@ -152,6 +142,19 @@ export default function ServicesPage() {
                   {/* Category Badge */}
                   <div className={`h-2 bg-gradient-to-r ${getCategoryColor(service.category)}`}></div>
                   
+                  {/* Service Image */}
+                  {service.image_url && (
+                    <div className="relative w-full h-48 overflow-hidden bg-background">
+                      <Image 
+                        src={service.image_url} 
+                        alt={service.name}
+                        fill
+                        className="object-cover group-hover:scale-105 transition-transform duration-300"
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                      />
+                    </div>
+                  )}
+                  
                   <div className="p-6">
                     {/* Service Name */}
                     <h3 className="text-2xl font-playfair font-bold text-heading mb-2 group-hover:text-primary transition-colors">
@@ -159,14 +162,16 @@ export default function ServicesPage() {
                     </h3>
                     
                     {/* Category Badge */}
-                    <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold mb-3
-                      ${service.category === 'Extensions' ? 'bg-primary/10 text-primary' : ''}
-                      ${service.category === 'Braids' ? 'bg-secondary/10 text-secondary-dark' : ''}
-                      ${service.category === 'Weave' ? 'bg-success/10 text-success' : ''}
-                      ${service.category === 'Others' ? 'bg-warning/10 text-warning' : ''}
-                    `}>
-                      {service.category}
-                    </span>
+                    {service.category && (
+                      <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold mb-3
+                        ${service.category === 'Extensions' ? 'bg-primary/10 text-primary' : ''}
+                        ${service.category === 'Braids' ? 'bg-secondary/10 text-secondary-dark' : ''}
+                        ${service.category === 'Weave' ? 'bg-success/10 text-success' : ''}
+                        ${service.category === 'Others' ? 'bg-warning/10 text-warning' : ''}
+                      `}>
+                        {service.category}
+                      </span>
+                    )}
                     
                     {/* Description */}
                     {service.description && (

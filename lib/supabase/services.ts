@@ -4,7 +4,7 @@ import { Service } from '../types/database'
 // Map database columns to TypeScript interface
 function mapDbToService(dbRow: any): Service {
   const service: any = {
-    id: dbRow.id,
+    id: String(dbRow.id), // Convert to string to handle both UUID and integer IDs
     name: dbRow.name,
     description: dbRow.description,
     duration: dbRow.duration_minutes, // Map duration_minutes to duration

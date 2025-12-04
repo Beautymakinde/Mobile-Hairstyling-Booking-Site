@@ -10,8 +10,8 @@ interface Service {
   description: string | null
   price: number
   duration: number
-  category: string | null
-  is_active: boolean
+  category?: string | null
+  active: boolean
   image_url: string | null
 }
 
@@ -28,11 +28,11 @@ export default function ServiceDetailPage() {
   const loadService = async () => {
     try {
       const data = await getServiceById(params.id as string)
-      if (!data || !data.is_active) {
+      if (!data || !data.active) {
         router.push('/services')
         return
       }
-      setService(data)
+      setService(data as Service)
     } catch (error) {
       console.error('Error loading service:', error)
       router.push('/services')
