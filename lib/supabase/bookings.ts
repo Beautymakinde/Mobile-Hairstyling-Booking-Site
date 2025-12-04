@@ -135,7 +135,6 @@ export async function createBookingRequest(request: BookingRequest): Promise<any
       status: 'pending',
       start_time: startDateTime,
       end_time: startDateTime,
-      deposit_receipt_url: null,
     }])
     .select()
     .single()
