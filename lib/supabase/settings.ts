@@ -54,3 +54,7 @@ export const settingsQueries = {
     return settings
   },
 }
+
+// Convenience exports
+export const getSettings = settingsQueries.getSettings
+export const upsertSettings = settingsQueries.upsertSettings
