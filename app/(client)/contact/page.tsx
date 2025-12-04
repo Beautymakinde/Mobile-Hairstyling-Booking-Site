@@ -54,7 +54,7 @@ export default function ContactPage() {
                 </div>
                 <div>
                   <h3 className="font-semibold text-heading mb-1">Phone</h3>
-                  <p className="text-body">(555) 123-4567</p>
+                  <a href="tel:8723604239" className="text-body hover:text-primary transition-colors">(872) 360-4239</a>
                   <p className="text-sm text-muted">Mon-Sat, 9am-7pm</p>
                 </div>
               </div>
@@ -67,7 +67,7 @@ export default function ContactPage() {
                 </div>
                 <div>
                   <h3 className="font-semibold text-heading mb-1">Email</h3>
-                  <p className="text-body">hello@hairstyling.com</p>
+                  <a href="mailto:Layzcentral@gmail.com" className="text-body hover:text-primary transition-colors">Layzcentral@gmail.com</a>
                   <p className="text-sm text-muted">Response within 24 hours</p>
                 </div>
               </div>
@@ -81,8 +81,8 @@ export default function ContactPage() {
                 </div>
                 <div>
                   <h3 className="font-semibold text-heading mb-1">Service Area</h3>
-                  <p className="text-body">Greater Metro Area</p>
-                  <p className="text-sm text-muted">Mobile service within 25 miles</p>
+                  <p className="text-body">Chicago, IL</p>
+                  <p className="text-sm text-muted">Mobile service within the area</p>
                 </div>
               </div>
             </div>
