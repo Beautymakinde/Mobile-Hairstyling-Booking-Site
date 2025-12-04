@@ -117,9 +117,6 @@ export interface BookingRequest {
 }
 
 export async function createBookingRequest(request: BookingRequest): Promise<any> {
-  // Combine date and time into proper timestamp format
-  const startDateTime = `${request.date}T${request.preferred_time}:00`
-  
   const { data, error } = await supabase
     .from('bookings')
     .insert([{
@@ -128,13 +125,13 @@ export async function createBookingRequest(request: BookingRequest): Promise<any
       client_name: request.client_name,
       client_email: request.client_email,
       client_phone: request.client_phone,
-      booking_date: request.date, // Add the booking_date field
+      booking_date: request.date,
       preferred_time: request.preferred_time,
       location: request.location,
       notes: request.notes || '',
       status: 'pending',
-      start_time: startDateTime,
-      end_time: startDateTime,
+      start_time: request.preferred_time, // Just the time, not timestamp
+      end_time: request.preferred_time, // Will be calculated later based on service duration
     }])
     .select()
     .single()
