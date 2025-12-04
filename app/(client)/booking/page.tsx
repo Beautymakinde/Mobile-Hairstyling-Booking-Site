@@ -230,14 +230,6 @@ function BookingContent() {
       </main>
     )
   }
-          <h1 className="text-2xl font-bold mb-4">Service Not Found</h1>
-          <button onClick={() => router.push('/services')} className="btn-primary">
-            Browse Services
-          </button>
-        </div>
-      </div>
-    )
-  }
 
   return (
     <main className="min-h-screen py-20 bg-background">
