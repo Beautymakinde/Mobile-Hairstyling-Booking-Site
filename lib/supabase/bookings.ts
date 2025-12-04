@@ -70,11 +70,16 @@ export const bookingQueries = {
     status?: Booking['status']
     dateStart?: string
     dateEnd?: string
+    clientId?: string
   }): Promise<(Booking & { clients: Client })[]> {
     let query = supabase.from('bookings').select('*, clients(*)')
 
     if (filters?.status) {
       query = query.eq('status', filters.status)
+    }
+
+    if (filters?.clientId) {
+      query = query.eq('client_id', filters.clientId)
     }
 
     if (filters?.dateStart && filters?.dateEnd) {
