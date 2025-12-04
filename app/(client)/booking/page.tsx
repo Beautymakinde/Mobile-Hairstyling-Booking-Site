@@ -3,6 +3,8 @@
 import { Suspense, useEffect, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { getServiceById } from '@/lib/supabase/services'
+import { createBookingRequest } from '@/lib/supabase/bookings'
+import { getSettings } from '@/lib/supabase/settings'
 
 interface Service {
   id: string
@@ -22,6 +24,9 @@ function BookingContent() {
   
   const [service, setService] = useState<Service | null>(null)
   const [loading, setLoading] = useState(true)
+  const [submitting, setSubmitting] = useState(false)
+  const [success, setSuccess] = useState(false)
+  const [zelleInfo, setZelleInfo] = useState<{ email?: string; phone?: string } | null>(null)
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -59,8 +64,36 @@ function BookingContent() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     
-    // TODO: Implement booking creation
-    alert('Booking functionality coming soon! Please contact us directly for now.')
+    if (!service) return
+    
+    try {
+      setSubmitting(true)
+      
+      // Create booking request
+      await createBookingRequest({
+        service_id: service.id,
+        client_name: formData.name,
+        client_email: formData.email,
+        client_phone: formData.phone,
+        date: formData.date,
+        preferred_time: formData.time,
+        location: formData.location,
+        notes: formData.notes
+      })
+      
+      // Load Zelle payment info
+      const settings = await getSettings()
+      if (settings.zelle_info) {
+        setZelleInfo(settings.zelle_info)
+      }
+      
+      setSuccess(true)
+    } catch (error) {
+      console.error('Error creating booking:', error)
+      alert('Failed to submit booking request. Please try again or contact us directly.')
+    } finally {
+      setSubmitting(false)
+    }
   }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -85,6 +118,118 @@ function BookingContent() {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
+          <h1 className="text-2xl font-bold mb-4">Service Not Found</h1>
+          <button onClick={() => router.push('/services')} className="btn-primary">
+            Browse Services
+          </button>
+        </div>
+      </div>
+    )
+  }
+
+  // Success screen with payment info
+  if (success) {
+    return (
+      <main className="min-h-screen py-20 bg-background">
+        <div className="container mx-auto px-4 max-w-2xl">
+          <div className="card p-8 text-center">
+            {/* Success Icon */}
+            <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+              <svg className="w-10 h-10 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+              </svg>
+            </div>
+
+            <h1 className="text-3xl font-playfair font-bold text-heading mb-4">
+              Booking Request Received!
+            </h1>
+            
+            <p className="text-body mb-8">
+              Thank you for your booking request. We&apos;ve received your information and will review it shortly.
+            </p>
+
+            {/* Service Summary */}
+            <div className="bg-background p-6 rounded-lg mb-8 text-left">
+              <h2 className="font-semibold text-lg mb-4">Booking Details</h2>
+              <div className="space-y-2 text-sm">
+                <div className="flex justify-between">
+                  <span className="text-muted">Service:</span>
+                  <span className="font-medium">{service.name}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted">Date:</span>
+                  <span className="font-medium">{new Date(formData.date).toLocaleDateString()}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted">Time:</span>
+                  <span className="font-medium">{formData.time}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted">Price:</span>
+                  <span className="font-medium text-primary">${service.price}</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Payment Instructions */}
+            {zelleInfo && (zelleInfo.email || zelleInfo.phone) && (
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 mb-8 text-left">
+                <h2 className="font-semibold text-lg mb-4 flex items-center gap-2">
+                  <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  Next Steps: Send Deposit
+                </h2>
+                <p className="text-sm text-blue-900 mb-4">
+                  To confirm your appointment, please send a deposit via Zelle to:
+                </p>
+                <div className="bg-white rounded-lg p-4 space-y-2">
+                  {zelleInfo.email && (
+                    <div>
+                      <span className="text-xs text-muted">Email:</span>
+                      <div className="font-mono font-semibold text-blue-600">{zelleInfo.email}</div>
+                    </div>
+                  )}
+                  {zelleInfo.phone && (
+                    <div>
+                      <span className="text-xs text-muted">Phone:</span>
+                      <div className="font-mono font-semibold text-blue-600">{zelleInfo.phone}</div>
+                    </div>
+                  )}
+                </div>
+                <p className="text-xs text-blue-800 mt-4">
+                  Once we receive your deposit, we&apos;ll send you a confirmation email with all the details.
+                </p>
+              </div>
+            )}
+
+            {/* Confirmation Email Notice */}
+            <div className="bg-background p-4 rounded-lg mb-6 text-sm">
+              <p className="text-muted">
+                A confirmation email has been sent to <strong className="text-heading">{formData.email}</strong>
+              </p>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex flex-col sm:flex-row gap-4">
+              <button
+                onClick={() => router.push('/services')}
+                className="btn-secondary flex-1"
+              >
+                Browse More Services
+              </button>
+              <button
+                onClick={() => router.push('/')}
+                className="btn-primary flex-1"
+              >
+                Return Home
+              </button>
+            </div>
+          </div>
+        </div>
+      </main>
+    )
+  }
           <h1 className="text-2xl font-bold mb-4">Service Not Found</h1>
           <button onClick={() => router.push('/services')} className="btn-primary">
             Browse Services
@@ -279,14 +424,26 @@ function BookingContent() {
               type="button"
               onClick={() => router.back()}
               className="btn-secondary flex-1"
+              disabled={submitting}
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="btn-primary flex-1"
+              className="btn-primary flex-1 disabled:opacity-50 disabled:cursor-not-allowed"
+              disabled={submitting}
             >
-              Request Booking
+              {submitting ? (
+                <span className="flex items-center justify-center gap-2">
+                  <svg className="animate-spin h-5 w-5" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  Submitting...
+                </span>
+              ) : (
+                'Request Booking'
+              )}
             </button>
           </div>
         </form>

@@ -102,3 +102,38 @@ export const bookingQueries = {
     return data || []
   },
 }
+
+// Simpler booking creation for client-facing booking form
+export interface BookingRequest {
+  service_id: string
+  client_name: string
+  client_email: string
+  client_phone: string
+  date: string
+  preferred_time: string
+  location: string
+  notes?: string
+}
+
+export async function createBookingRequest(request: BookingRequest): Promise<any> {
+  const { data, error } = await supabase
+    .from('bookings')
+    .insert([{
+      service_id: request.service_id,
+      client_name: request.client_name,
+      client_email: request.client_email,
+      client_phone: request.client_phone,
+      date: request.date,
+      preferred_time: request.preferred_time,
+      location: request.location,
+      notes: request.notes,
+      status: 'pending',
+      start_time: request.preferred_time,
+      end_time: request.preferred_time, // Will be calculated based on service duration
+    }])
+    .select()
+    .single()
+
+  if (error) throw error
+  return data
+}
