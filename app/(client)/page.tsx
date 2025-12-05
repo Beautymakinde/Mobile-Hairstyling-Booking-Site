@@ -208,7 +208,7 @@ export default function HomePage() {
               Book your appointment today and experience luxury hairstyling at home
             </p>
             <div className="pt-4">
-              <Link href="/services" className="btn-lg bg-white text-primary hover:bg-gray-50 shadow-xl transform hover:scale-105">
+              <Link href="/services" className="btn-lg bg-white text-primary hover:bg-gray-50 shadow-xl transform hover:scale-105 inline-flex items-center">
                 Browse Services
                 <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
