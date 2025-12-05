@@ -1,4 +1,4 @@
--- Setup clients table with proper structure and RLS policies
+--- Setup clients table with proper structure and RLS policies
 -- Run this in your Supabase SQL editor
 -- This is SAFE to run - it only creates policies if they don't exist
 
